@@ -22,6 +22,7 @@ import org.osgi.framework.BundleContext;
 import org.python.pydev.core.CorePlugin;
 import org.python.pydev.debug.newconsole.prefs.ColorManager;
 import org.python.pydev.debug.pyunit.PyUnitViewTestsHolder;
+import org.python.pydev.debug.swarm.Swarm;
 import org.python.pydev.shared_core.SharedCorePlugin;
 import org.python.pydev.shared_ui.ImageCache;
 
@@ -45,6 +46,10 @@ public class PydevDebugPlugin extends AbstractUIPlugin {
         super.start(context);
         PyUnitViewTestsHolder.restoreTestsRunState();
         imageCache = new ImageCache(PydevDebugPlugin.getDefault().getBundle().getEntry("/"));
+        //XXX SWARM DEBUGGER - BEGIN
+        Swarm.init();
+        Swarm.start();
+        //XXX SWARM DEBUGGER - END
     }
 
     @Override
@@ -53,6 +58,9 @@ public class PydevDebugPlugin extends AbstractUIPlugin {
         super.stop(context);
         ColorManager.getDefault().dispose();
         imageCache.dispose();
+        //XXX SWARM DEBUGGER - BEGIN
+        Swarm.stop();
+        //XXX SWARM DEBUGGER - END
     }
 
     public static PydevDebugPlugin getDefault() {

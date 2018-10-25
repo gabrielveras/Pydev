@@ -37,6 +37,7 @@ import org.python.pydev.core.log.Log;
 import org.python.pydev.debug.core.PydevDebugPlugin;
 import org.python.pydev.debug.model.PyBreakpoint;
 import org.python.pydev.debug.model.PyDebugModelPresentation;
+import org.python.pydev.debug.swarm.Swarm;
 import org.python.pydev.debug.ui.IPyToggleBreakpointsTarget;
 import org.python.pydev.shared_core.io.FileUtils;
 import org.python.pydev.shared_ui.editor_input.EditorInputUtils;
@@ -96,7 +97,7 @@ public class PyBreakpointRulerAction extends AbstractBreakpointRulerAction {
     protected void addMarker() {
         IDocument document = getDocument();
         int rulerLine = getInfo().getLineOfLastMouseButtonActivity();
-        IToggleBreakpointsTarget adapter = (IToggleBreakpointsTarget) getTextEditor().getAdapter(
+        IToggleBreakpointsTarget adapter = getTextEditor().getAdapter(
                 IToggleBreakpointsTarget.class);
         if (adapter instanceof IPyToggleBreakpointsTarget) {
             IPyToggleBreakpointsTarget iPyToggleBreakpointsTarget = (IPyToggleBreakpointsTarget) adapter;
@@ -106,7 +107,8 @@ public class PyBreakpointRulerAction extends AbstractBreakpointRulerAction {
         }
     }
 
-    public static void addBreakpointMarker(IDocument document, int lineNumber, ITextEditor textEditor, final String type) {
+    public static void addBreakpointMarker(IDocument document, int lineNumber, ITextEditor textEditor,
+            final String type) {
         try {
             if (lineNumber < 0) {
                 return;
@@ -164,6 +166,13 @@ public class PyBreakpointRulerAction extends AbstractBreakpointRulerAction {
                     br.setMarker(marker);
                     IBreakpointManager breakpointManager = DebugPlugin.getDefault().getBreakpointManager();
                     breakpointManager.addBreakpoint(br);
+                    //XXX SWARM DEBUGGER - BEGIN
+                    try {
+                        Swarm.createBreakpoint(br);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    //XXX SWARM DEBUGGER - END
                 }
             };
 

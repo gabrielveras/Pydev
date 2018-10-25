@@ -30,6 +30,7 @@ import org.python.pydev.debug.model.remote.GetFileContentsCommand;
 import org.python.pydev.debug.model.remote.GetFrameCommand;
 import org.python.pydev.debug.model.remote.GetVariableCommand;
 import org.python.pydev.debug.model.remote.ICommandResponseListener;
+import org.python.pydev.debug.swarm.Swarm;
 import org.python.pydev.editorinput.PySourceLocatorPrefs;
 import org.python.pydev.shared_core.string.StringUtils;
 
@@ -255,6 +256,17 @@ public class PyStackFrame extends PlatformObject
     @Override
     public void stepInto() throws DebugException {
         thread.stepInto();
+        //XXX SWARM DEBUGGER - BEGIN
+        try {
+            IThread[] threads = target.getThreads();
+            IStackFrame[] stackFrames = threads[0].getStackFrames();
+            PyStackFrame invoking = (PyStackFrame) stackFrames[0];
+            PyStackFrame invoked = (PyStackFrame) invoking.getThread().getTopStackFrame();
+            Swarm.stepInto(invoking, invoked);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        //XXX SWARM DEBUGGER - END
     }
 
     @Override
